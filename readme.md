@@ -1,13 +1,36 @@
 i8n-sherlock-cli 🕵️
-[][npm-url]
-[][build-url]
-[][license-url]
-
 i8n-sherlock-cli is a powerful command-line interface designed to streamline the management of JSON-based translation files. It helps you find, audit, and add translation keys with confidence, saving development time and preventing common i18n mistakes.
 
 This tool is framework-agnostic and works with any project that uses a directory of JSON files for internationalization, such as those using next-intl.
 
-## Features
+Table of Contents
+Features
+
+Installation
+
+Configuration
+
+Commands
+
+init
+
+stats
+
+find
+
+audit
+
+sync
+
+clean
+
+export-missing
+
+add
+
+License
+
+Features
 🔎 Find existing strings and their translation status across all locales.
 
 ➕ Intelligently Add new keys with interactive typo detection and automatic reuse of existing translations.
@@ -24,7 +47,7 @@ This tool is framework-agnostic and works with any project that uses a directory
 
 ⚙️ Highly Configurable to fit your project's unique file structure.
 
-## Installation
+Installation
 It's recommended to install the tool as a local development dependency in your project.
 
 Bash
@@ -32,7 +55,7 @@ Bash
 npm install i8n-sherlock-cli --save-dev
 You can then run the tool using npx i8n-sherlock.
 
-## Configuration
+Configuration
 The tool is configured using a single .i8n-sherlockrc.json file in your project's root. To get started, run the init command.
 
 Bash
@@ -62,16 +85,16 @@ Use /**/ to enable recursive searching in subdirectories.
 
 allowIdentical: An array of locales that are permitted to have strings identical to the baseLocale without being flagged as "untranslated" (e.g., "en-ca").
 
-## Commands
+Commands
 All commands are run via npx i8n-sherlock <command>.
 
-### init
+init
 Initializes the project by creating a default .i8n-sherlockrc.json configuration file in the current directory.
 
 Bash
 
 npx i8n-sherlock init
-### stats
+stats
 Displays detailed statistics about your project's translation health, broken down into two tables: Key Coverage (structural completeness) and Translation Coverage (actual translation work).
 
 Bash
@@ -79,7 +102,7 @@ Bash
 npx i8n-sherlock stats
 --json: Use this flag to output the stats in a machine-readable JSON format, perfect for CI/CD pipelines.
 
-### find <text>
+find <text>
 Performs a deep, exact-match search for a string. It first searches the base locale. If not found, it then searches all other locales to find "orphaned" strings.
 
 Bash
@@ -87,7 +110,7 @@ Bash
 npx i8n-sherlock find "Your string to find"
 <text>: The case-insensitive string to search for, enclosed in quotes.
 
-### audit <locale>
+audit <locale>
 Performs a deep audit and reports a list of all key paths that exist in the base locale but are missing from a target locale.
 
 Bash
@@ -95,7 +118,7 @@ Bash
 npx i8n-sherlock audit es
 <locale>: The single locale to audit against the base locale.
 
-<!-- ### sync <locale...>
+sync <locale...>
 Automatically adds keys that are missing in target locales. It finds all keys present in the base locale and creates them in the specified locales, using the base language string as a placeholder.
 
 Bash
@@ -114,20 +137,23 @@ npx i8n-sherlock sync all
 
 --yes or -y: Skips the interactive confirmation prompt.
 
-### clean <locale...>
+clean <locale...>
 Cleans up translation files by finding and removing orphaned keys that no longer exist in the base locale.
 
 Bash
 
+# Clean a single locale
 npx i8n-sherlock clean es
+
+# See what would be cleaned from all locales
 npx i8n-sherlock clean all --dry-run
 <locale...>: One or more space-separated locales, or the keyword all.
 
 --dry-run: Shows what keys would be deleted without writing to any files.
 
---yes or -y: Skips the interactive confirmation prompt. -->
+--yes or -y: Skips the interactive confirmation prompt.
 
-### export-missing <locale...>
+export-missing <locale...>
 Generates a file containing a to-do list of all keys that are either missing or untranslated. This is the primary tool for preparing work for translators.
 
 Bash
@@ -143,7 +169,7 @@ npx i8n-sherlock export-missing all --xliff
 
 --force or -f: Overwrites an existing export file if one exists.
 
-### add <namespace> <key> <text>
+add <namespace> <key> <text>
 The primary command for adding new strings. It's an intelligent, multi-step process:
 
 Checks for duplicate keys or strings in the target namespace.
@@ -167,12 +193,5 @@ npx i8n-sherlock add common user.profile.tagline "My new tagline"
 
 <text>: The new string for the base locale, enclosed in quotes.
 
-## License
+License
 This project is licensed under the MIT License.
-
-[]: #
-[npm-url]: https://www.google.com/search?q=%5Bhttps://www.npmjs.com/package/i8n-sherlock-cli%5Dhttps://www.npmjs.com/package/i8n−sherlock−cli
-[]: #
-[build-url]: https://www.google.com/search?q=%5Bhttps://travis-ci.com/your-username/i8n-sherlock-cli%5Dhttps://travis−ci.com/your−username/i8n−sherlock−cli
-[]: #
-[license-url]: https://www.google.com/search?q=%5Bhttps://opensource.org/licenses/MIT%5Dhttps://opensource.org/licenses/MIT
