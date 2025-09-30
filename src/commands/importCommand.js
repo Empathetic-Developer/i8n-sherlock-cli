@@ -1,5 +1,6 @@
 import chalk from "chalk";
-import fs from "fs/promises";
+import fs from 'fs/promises';
+import path from 'path';
 import readline from "readline";
 import { loadLocaleData } from "../files.js";
 import { countTotalKeysDeep } from "./statsCommand.js";
@@ -46,23 +47,33 @@ export async function importCommand(locale, xliffPath, dryRun, config) {
         return;
     }
 
+    process.stdout.write(chalk.blue('  - Verifying namespaces against base locale... '));
+    const { data: baseData } = await loadLocaleData(config.baseLocale, config.path);
+    console.log(chalk.green('Done.'));
+
     const changes = {};
     let changesCount = 0;
+    const skippedNamespaces = new Set();
+
     for (const unit of transUnits) {
         const id = unit['@id'];
-        
-        // ✅ FIX: Use the new helper to safely get the text content.
         const sourceText = getNodeText(unit.source);
         const targetText = getNodeText(unit.target);
         
-        // Skip if target is missing, empty, or same as source
         if (!targetText || targetText === sourceText) {
             continue;
         }
 
         const idParts = id.split('.');
+        if (idParts.length < 2) continue; // Invalid ID format
+
         const namespace = idParts[0];
         const keyPath = idParts.slice(1).join('.');
+        
+        if (!baseData.hasOwnProperty(namespace)) {
+            skippedNamespaces.add(namespace);
+            continue;
+        }
         
         if (!changes[namespace]) {
             changes[namespace] = {};
@@ -72,17 +83,20 @@ export async function importCommand(locale, xliffPath, dryRun, config) {
     }
 
     if (changesCount === 0) {
-        console.log(chalk.yellow('✨ No new translations found in the XLIFF file.'));
+        console.log(chalk.yellow('\n✨ No new, valid translations found in the XLIFF file.'));
         return;
     }
 
-    // 3. Display planned changes
     console.log(chalk.yellow(`\nFound ${changesCount} new translation(s) to apply:`));
     for (const namespace in changes) {
         console.log(`  - For namespace ${chalk.cyan(namespace)}:`);
         for (const keyPath in changes[namespace]) {
             console.log(`    - ${chalk.yellow(keyPath)} -> "${changes[namespace][keyPath]}"`);
         }
+    }
+
+    if (skippedNamespaces.size > 0) {
+        console.log(chalk.yellow(`\n⚠️  Skipped ${skippedNamespaces.size} namespace(s) not found in this project: ${[...skippedNamespaces].join(', ')}`));
     }
 
     if (dryRun) {
@@ -96,15 +110,16 @@ export async function importCommand(locale, xliffPath, dryRun, config) {
         return;
     }
     
-    // 4. Apply changes
     console.log(chalk.blue(`\n✍️ Applying changes...`));
     for (const namespace in changes) {
         const outputPath = config.path.replace('{locale}', locale).replace('{namespace}', namespace);
         for (const keyPath in changes[namespace]) {
+            process.stdout.write(`\n\n  - Updating ${chalk.cyan(keyPath)} in ${chalk.cyan(path.basename(outputPath))}... `);
             const value = changes[namespace][keyPath];
             await updateJsonFile(outputPath, keyPath, value);
         }
     }
 
     console.log(chalk.green.bold('\n✅ Success! Translations have been imported.'));
+
 }
