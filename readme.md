@@ -18,6 +18,7 @@ This tool is framework-agnostic and works with any project that uses a directory
   - [clean](#clean-command)
   - [export-missing](#export-missing-command)
   - [add](#add-command)
+  - [import](#import-command)
 - [License](#license)
 
 ## Features
@@ -197,6 +198,20 @@ npx i8n-sherlock add common user.profile.tagline "My new tagline"
 ```user.profile.tagline```: The key to create. Use dot notation for nested objects.
 
 ```"My new tagline"```: The new string for the base locale, enclosed in quotes.
+
+## Import Command
+Safely parses a XLIFF file and merges the new translations back into your project's JSON files.
+
+- ```locale```: The single locale to apply the translations to (e.g., es).
+- ```file path```: The path to the .xliff file you want to import.
+- ```--dry-run```: Shows a preview of all incoming translations without writing to any files.
+
+- ```--yes or -y```: Skips the interactive confirmation prompt.
+
+```bash
+npx i8n-sherlock import es ./translations/es.xliff
+```
+
 
 ### License
 This project is licensed under the MIT License.
